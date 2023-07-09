@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Define the name of the project
+PROJECT_NAME="verilog_test_case"
+
+
+# Compile the Verilog files into an executable
+iverilog '-Wall' -o $PROJECT_NAME *.v
+
+# Run the simulation for scripts
+vvp $PROJECT_NAME
+
+# Print a message indicating that the script has finished running
+echo "Success! Script has finished running."

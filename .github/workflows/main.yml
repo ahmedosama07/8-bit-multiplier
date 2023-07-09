@@ -1,0 +1,39 @@
+name: Verilog Build and Analysis
+
+on: [push, pull_request]
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Verilog Compiler
+      uses: jge162/verilog_compiler@1.0.0
+
+    - run: |
+        echo "Install required dependencies"
+        sudo apt-get update
+        sudo apt-get install iverilog
+        sudo apt-get install verilator
+
+    - run: |
+        echo "Set executable permission on script file"
+        chmod +x script/sh
+        array=()
+        while IFS=  read -r -d $'\0'; do
+            array+=("$REPLY")
+        done < <(find . -name "*.v" -print0)
+        len=${#array[*]}
+        echo "found : ${len}"
+        
+        for i in ${!array[@]}; do
+          echo "element $i is ${array[$i]}"
+          
+          chmod +x "${array[$i]}"
+        done
+        
+        
+        
+    - run: |
+        echo "Run, Build Application using script"
+        ./script/sh
