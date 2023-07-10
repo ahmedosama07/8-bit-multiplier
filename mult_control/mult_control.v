@@ -20,7 +20,7 @@ parameter MSB = 3'b011; // Found 110
 parameter CALC_DONE = 3'b100; // Found 1101
 parameter ERR = 3'b101;
 
-always @(posedge clk, negedge reset_a) begin
+always @(posedge clk, posedge start, negedge reset_a) begin
   if (~reset_a) begin
     state_out <= IDLE;
   end
@@ -38,7 +38,7 @@ always @(posedge clk, negedge reset_a) begin
                 sclr_n <= 1'b1;
                 state_out <= IDLE;
             end
-      LSB: if (~start && count == 2'b00) begin 
+      LSB: if (start != 1'b1 && count == 2'b00) begin 
                 input_sel <= 2'b00;
                 shift_sel <= 2'b00;
                 done <= 1'b0;
@@ -52,7 +52,7 @@ always @(posedge clk, negedge reset_a) begin
                 sclr_n <= 1'b1;
                 state_out <= ERR;
             end
-      MID: if (~start && count == 2'b10) begin 
+      MID: if (start != 1'b1 && count == 2'b10) begin 
                 input_sel <= 2'b10;
                 shift_sel <= 2'b01;
                 done <= 1'b0;
@@ -60,7 +60,7 @@ always @(posedge clk, negedge reset_a) begin
                 sclr_n <= 1'b1;
                 state_out <= MSB;
             end
-            else if (~start && count == 2'b01) begin 
+            else if (start != 1'b1 && count == 2'b01) begin 
                 input_sel <= 2'b01;
                 shift_sel <= 2'b01;
                 done <= 1'b0;
@@ -74,7 +74,7 @@ always @(posedge clk, negedge reset_a) begin
                 sclr_n <= 1'b1;
                 state_out <= ERR;
             end
-      MSB: if (~start && count == 2'b11) begin 
+      MSB: if (start == 1'b0 && count == 2'b11) begin 
                 input_sel <= 2'b11;
                 shift_sel <= 2'b10;
                 done <= 1'b0;
