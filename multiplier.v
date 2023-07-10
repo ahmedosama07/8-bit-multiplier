@@ -42,7 +42,7 @@ adder add(.data_a(shift_out_wire), .data_b(product8x8_out_wire), .sum(sum_wire))
 synreg reg16(.reg_out(product8x8_out_wire), .datain(sum_wire), .clk(clk), .sclr_n(sclr_n_wire), .clk_en(clk_ena_wire));
 
 // Counter
-counter count(.clk(clk), .aclr_n(~start), .count_out(count_wire));
+counter count(.clk(clk), .aclr_n(!start), .count_out(count_wire));
 
 // Multiplier controller
 mult_control controller(.clk(clk), .reset_a(reset_a), .start(start), .count(count_wire), .done(done_flag), .clk_ena(clk_ena_wire), .sclr_n(sclr_n_wire), .input_sel(select_wire), .shift_sel(shift_wire), .state_out(state_out_wire));
