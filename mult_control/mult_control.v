@@ -20,100 +20,99 @@ parameter MSB = 3'b011; // Found 110
 parameter CALC_DONE = 3'b100; // Found 1101
 parameter ERR = 3'b101;
 
-// Define the state register
-reg [2:0] state;
-always @(posedge clk, posedge reset_a) begin
-  if (reset_a) begin
-    state <= IDLE;
+always @(posedge clk, posedge start, negedge reset_a) begin
+  if (~reset_a) begin
+    state_out <= IDLE;
   end
   else begin
-    case (state)
+    case (state_out)
       IDLE: if (start) begin 
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b0;
-                state <= LSB;
+                state_out <= LSB;
             end
             else begin
                 done <= 1'b0;
                 clk_ena <= 1'b0;
                 sclr_n <= 1'b1;
-                state <= IDLE;
+                state_out <= IDLE;
             end
-      LSB: if (~start && count == 2'b00) begin 
+      LSB: if (start != 1'b1 && count == 2'b00) begin 
                 input_sel <= 2'b00;
                 shift_sel <= 2'b00;
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b1;
-                state <= MID;
+                state_out <= MID;
             end
             else begin
                 done <= 1'b0;
                 clk_ena <= 1'b0;
                 sclr_n <= 1'b1;
-                state <= ERR;
+                state_out <= ERR;
             end
-      MID: if (~start && count == 2'b10) begin 
+      MID: if (start != 1'b1 && count == 2'b10) begin 
                 input_sel <= 2'b10;
                 shift_sel <= 2'b01;
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b1;
-                state <= MSB;
+                state_out <= MSB;
             end
-            else if (~start && count == 2'b01) begin 
+            else if (start != 1'b1 && count == 2'b01) begin 
                 input_sel <= 2'b01;
                 shift_sel <= 2'b01;
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b1;
-                state <= MID;
+                state_out <= MID;
             end
             else begin
                 done <= 1'b0;
                 clk_ena <= 1'b0;
                 sclr_n <= 1'b1;
-                state <= ERR;
+                state_out <= ERR;
             end
-      MSB: if (~start && count == 2'b11) begin 
+      MSB: if (start == 1'b0 && count == 2'b11) begin 
                 input_sel <= 2'b11;
                 shift_sel <= 2'b10;
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b1;
-                state <= CALC_DONE;
+                state_out <= CALC_DONE;
             end
             else begin
                 done <= 1'b0;
                 clk_ena <= 1'b0;
                 sclr_n <= 1'b1;
-                state <= ERR;
+                state_out <= ERR;
             end
       CALC_DONE: if (start) begin 
                     done <= 1'b0;
                     clk_ena <= 1'b0;
                     sclr_n <= 1'b1;
-                    state <= ERR;
+                    state_out <= ERR;
                 end
                 else begin
                     done <= 1'b1;
                     clk_ena <= 1'b0;
                     sclr_n <= 1'b1;
-                    state <= IDLE;
+                    state_out <= IDLE;
                 end
       ERR: if (start) begin 
                 done <= 1'b0;
                 clk_ena <= 1'b1;
                 sclr_n <= 1'b0;
-                state <= LSB;
+                state_out <= LSB;
             end
             else begin
                 done <= 1'b0;
                 clk_ena <= 1'b0;
                 sclr_n <= 1'b1;
-                state <= ERR;
+                state_out <= ERR;
             end
+      default: state_out <= IDLE;
     endcase
   end
 end
