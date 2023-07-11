@@ -8,8 +8,8 @@ clk=0;
 forever #5 clk=~clk;
 end
 initial begin
-aclr_n=1;
+aclr_n=1'b1;
 #20;
-aclr_n=0;
+aclr_n=1'b0;
 end
 endmodule 
